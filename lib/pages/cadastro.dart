@@ -1,7 +1,7 @@
 import 'package:avisa_mais/pages/nav_base.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+// import 'package:http/http.dart' as http;
+// import 'dart:convert';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -12,46 +12,22 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  Future<void> _checkEmail(String email) async {
+  // DECIDIR SE SERÁ NECESSÁRIO VERIFICAR EMAIL COM CÓDIGO
+  Future<void> _email() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      _showError('Preencha todos os campos!');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
-
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost:9000/codigo-validacao/enviar'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'email': email,
-        }),
-      );
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (response.statusCode == 201) {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => VerificationPage(email: email),
-        //   ),
-        // );
-      } else if (response.statusCode == 403) {
-        _showError('O e-mail já está cadastrado.');
-      } else {
-        _showError('Erro ao verificar e-mail. Código: ${response.statusCode}');
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      _showError('Erro ao verificar e-mail: $e');
-    }
   }
 
   void _showError(String message) {
@@ -63,18 +39,28 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
-      title: 'Cadastro',
+      title: 'Avisa +',
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-              'assets/images/Logo fundo branco.png',
+              'assets/logo_unicv_colorida.png',
               height: 100,
-              width: 100,
+              width: 250,
             ),
-            const SizedBox(height: 32.0),
+            const SizedBox(height: 18.0),
+            const Text(
+              'Cadastro',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 61, 69, 44),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24.0),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -83,24 +69,27 @@ class _SignupPageState extends State<SignupPage> {
               ),
               keyboardType: TextInputType.emailAddress,
             ),
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Senha',
+                border: OutlineInputBorder(),
+              ),
+            ),
             const SizedBox(height: 32.0),
             _isLoading
                 ? const CircularProgressIndicator()
                 : ElevatedButton(
-              onPressed: () {
-                final email = _emailController.text;
-                if (email.isEmpty) {
-                  _showError('O e-mail é obrigatório.');
-                  return;
-                }
-                _checkEmail(email);
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: const Color.fromARGB(255, 31, 17, 65),
-              ),
-              child: const Text('Cadastrar'),
-            ),
+                    onPressed: _email,
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color.fromARGB(255, 86, 105, 48),
+                      minimumSize: const Size(200, 40),
+                    ),
+                    child: const Text('Cadastrar'),
+                  ),
           ],
         ),
       ),
