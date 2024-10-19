@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'pages/login.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+final _firebaseAuth = FirebaseAuth.instance;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -14,7 +23,7 @@ class MyApp extends StatelessWidget {
       title: 'Avisa +',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 86,105,48)),
+            seedColor: const Color.fromARGB(255, 86, 105, 48)),
         useMaterial3: true,
         // Configura o tema para os botões
         elevatedButtonTheme: ElevatedButtonThemeData(
