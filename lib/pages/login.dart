@@ -1,6 +1,7 @@
 import 'package:avisa_mais/defaults/button-cadastro.dart';
 import 'package:avisa_mais/defaults/button-login.dart';
 import 'package:avisa_mais/pages/nav_base.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
 // import 'dart:convert';
@@ -30,31 +31,22 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    // CONFIGURAR ENDPOINT
-    // final response = await http.post(
-    //   Uri.parse('http://localhost:9000/login'),
-    //   headers: <String, String>{
-    //     'Content-Type': 'application/json; charset=UTF-8',
-    //   },
-    //   body: jsonEncode(<String, String>{
-    //     'email': email,
-    //     'password': password,
-    //   }),
-    // );
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    // setState(() {
-    //   _isLoading = false;
-    // });
-
-    // VALIDAÇÃO DO FIREBASE
-    // if (response.statusCode == 200) {
-    //     // Navigator.pushReplacement(
-    //     //   context,
-    //     //   MaterialPageRoute(builder: (context) => const HomePage()),
-    //     // );
-    // } else {
-    //   _showError('Login falhou. Verifique suas credenciais.');
-    // }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login realizado com sucesso!')),
+      );
+    } catch (e) {
+      _showError('Falha no login. Verifique suas credenciais.');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _showError(String message) {
