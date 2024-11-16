@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'avisa-mais-15b07.appspot.com',
     measurementId: 'G-V9Y0NVHV0C',
   );
+
 }

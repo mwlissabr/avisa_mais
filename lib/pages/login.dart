@@ -39,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Login realizado com sucesso!')),
+        
       );
     } catch (e) {
       _showError('Falha no login. Verifique suas credenciais.');

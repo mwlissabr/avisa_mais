@@ -1,5 +1,6 @@
 import 'package:avisa_mais/pages/nav_base.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:http/http.dart' as http;
 // import 'dart:convert';
 
@@ -16,19 +17,46 @@ class _SignupPageState extends State<SignupPage> {
   bool _isLoading = false;
 
   // DECIDIR SE SERÁ NECESSÁRIO VERIFICAR EMAIL COM CÓDIGO
-  Future<void> _email() async {
-    final email = _emailController.text;
-    final password = _passwordController.text;
+  Future<void> _registerUser() async {
+  final email = _emailController.text;
+  final password = _passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      _showError('Preencha todos os campos!');
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
+  if (email.isEmpty || password.isEmpty) {
+    _showError('Preencha todos os campos!');
+    return;
   }
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    // Cadastra o usuário no Firebase
+    UserCredential userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
+
+    // Sucesso - exiba uma mensagem
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Cadastro realizado com sucesso!')),
+    );
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'weak-password') {
+      _showError('A senha é muito fraca.');
+    } else if (e.code == 'email-already-in-use') {
+      _showError('Este e-mail já está sendo usado.');
+    } else if (e.code == 'invalid-email') {
+      _showError('E-mail inválido.');
+    } else {
+      _showError('Erro no cadastro: ${e.message}');
+    }
+  } catch (e) {
+    _showError('Erro: $e');
+  }
+
+  setState(() {
+    _isLoading = false;
+  });
+}
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -82,7 +110,7 @@ class _SignupPageState extends State<SignupPage> {
             _isLoading
                 ? const CircularProgressIndicator()
                 : ElevatedButton(
-                    onPressed: _email,
+                    onPressed: _registerUser,
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color.fromARGB(255, 86, 105, 48),

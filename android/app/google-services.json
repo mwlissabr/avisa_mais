@@ -1,15 +1,16 @@
 {
   "project_info": {
     "project_number": "290299167511",
+    "firebase_url": "https://avisa-mais-15b07-default-rtdb.firebaseio.com",
     "project_id": "avisa-mais-15b07",
-    "storage_bucket": "avisa-mais-15b07.appspot.com"
+    "storage_bucket": "avisa-mais-15b07.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:290299167511:android:8825427bd2013792feed52",
+        "mobilesdk_app_id": "1:290299167511:android:9f45a43d52b7939cfeed52",
         "android_client_info": {
-          "package_name": "com.flutterapp.avisamais"
+          "package_name": "com.example.avisa_mais"
         }
       },
       "oauth_client": [],
