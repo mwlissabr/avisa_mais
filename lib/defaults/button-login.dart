@@ -1,4 +1,3 @@
-import 'package:avisa_mais/pages/selecao_cursos.dart';
 import 'package:flutter/material.dart';
 
 class LoginButton extends StatelessWidget {
@@ -9,12 +8,7 @@ class LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: (){
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const CoursesSelectionPage())
-        );
-      },
+      onPressed: onPressed, // Usa o callback passado
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 86, 105, 48),

@@ -1,3 +1,4 @@
+import 'package:avisa_mais/pages/selecao_semestre.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -9,7 +10,7 @@ class CoursesSelectionPage extends StatefulWidget {
 }
 
 class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
-  List<String> courses = [];
+  List<Map<String, dynamic>> courses = [];
   bool isLoading = true;
 
   @override
@@ -19,33 +20,36 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
   }
 
   Future<void> _loadCourses() async {
-  try {
-    final snapshot = await FirebaseFirestore.instance.collection('courses').get();
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('courses').get();
 
-    print('Documentos recebidos: ${snapshot.docs.length}');
-    
-    List<String> loadedCourses = [];
-    for (var doc in snapshot.docs) {
-      var courseName = doc['name']; 
-      loadedCourses.add(courseName);
-      print('Curso: $courseName'); 
-    }
+      List<Map<String, dynamic>> loadedCourses = [];
+      for (var doc in snapshot.docs) {
+        var data = doc.data();
+        if (data.containsKey('name') && data.containsKey('semesters')) {
+          loadedCourses.add({
+            'name': data['name'],
+            'semesters': List<String>.from(data['semesters']),
+          });
+        }
+      }
 
-    if (mounted) {
-      setState(() {
-        courses = loadedCourses;
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          courses = loadedCourses;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      print('Erro ao carregar cursos: $e');
     }
-  } catch (e) {
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
-    }
-    print('Erro ao carregar cursos: $e');
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +61,7 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
         title: const Text(
           'Selecione o curso',
@@ -81,24 +85,28 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
             children: [
               Image.asset(
                 'assets/logo_unicv_colorida.png',
-                height: 100,
-                width: 250,
+                height: 120,
+                width: 400,
               ),
               const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withOpacity(0.4),
                   borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 1.0,
+                  ),
                 ),
                 child: Column(
                   children: [
                     const Text(
                       'Selecione o curso:',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF3D4530),
+                        color: Colors.black,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -108,20 +116,32 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
                             ? const Text('Nenhum curso disponível.')
                             : SizedBox(
                                 height: 350,
-                                width: 400,
+                                width: 320,
                                 child: ListView.builder(
                                   itemCount: courses.length,
                                   itemBuilder: (context, index) {
                                     return ListTile(
                                       title: Text(
-                                        courses[index],
+                                        courses[index]['name'],
                                         style: const TextStyle(
                                           fontSize: 16,
-                                          color: Color(0xFF3D4530),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
                                         ),
                                       ),
                                       onTap: () {
-                                        // ação ao selecionar o curso
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SemestersSelectionPage(
+                                              courseName: courses[index]
+                                                  ['name'],
+                                              semesters: courses[index]
+                                                  ['semesters'],
+                                            ),
+                                          ),
+                                        );
                                       },
                                     );
                                   },

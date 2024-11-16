@@ -1,6 +1,7 @@
 import 'package:avisa_mais/defaults/button-cadastro.dart';
 import 'package:avisa_mais/defaults/button-login.dart';
 import 'package:avisa_mais/pages/nav_base.dart';
+import 'package:avisa_mais/pages/selecao_cursos.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
@@ -19,8 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
 
   Future<void> _login() async {
-    final email = _emailController.text;
-    final password = _passwordController.text;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
       _showError('Preencha todos os campos!');
@@ -37,12 +38,30 @@ class _LoginPageState extends State<LoginPage> {
         password: password,
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login realizado com sucesso!')),
-        
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const CoursesSelectionPage()),
       );
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'Usuário não encontrado.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Senha incorreta.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'E-mail inválido.';
+          break;
+        default:
+          errorMessage = 'Falha no login. Tente novamente.';
+      }
+
+      _showError(errorMessage);
     } catch (e) {
-      _showError('Falha no login. Verifique suas credenciais.');
+      _showError('Erro inesperado. Tente novamente.');
     } finally {
       setState(() {
         _isLoading = false;
@@ -67,8 +86,8 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             Image.asset(
               'assets/logo_unicv_colorida.png',
-              height: 100,
-              width: 250,
+              height: 120,
+              width: 400,
             ),
             const SizedBox(height: 16.0),
             const Text(
