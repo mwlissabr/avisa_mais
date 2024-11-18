@@ -4,8 +4,6 @@ import 'package:avisa_mais/pages/nav_base.dart';
 import 'package:avisa_mais/pages/selecao_cursos.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isRecoveryMode = false; // Adicionada para controlar o modo de recuperação de senha
 
   Future<void> _login() async {
     final email = _emailController.text.trim();
@@ -69,6 +68,24 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _resetPassword() async {
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      _showError('Digite seu e-mail para redefinir a senha.');
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('E-mail de recuperação enviado. Verifique sua caixa de entrada.')),
+      );
+    } on FirebaseAuthException catch (e) {
+      _showError('Erro ao enviar e-mail de recuperação: ${e.message}');
+    }
+  }
+
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -109,31 +126,39 @@ class _LoginPageState extends State<LoginPage> {
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16.0),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Senha',
-                border: OutlineInputBorder(),
+            // Exibe o campo de senha apenas se não estiver no modo de recuperação
+            if (!_isRecoveryMode)
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Senha',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
             const SizedBox(height: 20.0),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : LoginButton(
-                    onPressed: _login,
-                  ),
+            // Mostra botão de login apenas se não estiver no modo de recuperação
+            if (!_isRecoveryMode)
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : LoginButton(
+                      onPressed: _login,
+                    ),
             const SizedBox(height: 10.0),
-            const SignupButton(),
+            if (!_isRecoveryMode) const SignupButton(),
+            if (_isRecoveryMode)
+              ElevatedButton(
+                onPressed: _resetPassword,
+                child: const Text('Enviar e-mail de recuperação'),
+              ),
             const SizedBox(height: 10.0),
             TextButton(
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                // );
+                setState(() {
+                  _isRecoveryMode = !_isRecoveryMode; // Alterna o modo de recuperação
+                });
               },
-              child: const Text('Esqueci minha senha'),
+              child: Text(_isRecoveryMode ? 'Voltar ao login' : 'Esqueci minha senha'),
             ),
           ],
         ),
