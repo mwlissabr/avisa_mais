@@ -1,5 +1,3 @@
-import 'package:avisa_mais/pages/avisos_docentes.dart';
-import 'package:avisa_mais/pages/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +72,7 @@ class _RecentNotificationsPageState extends State<RecentNotificationsPage> {
     } else if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const EnviarAvisoPage()),
+        MaterialPageRoute(builder: (context) => const AvisosAlunosPage()),
       );
     }
   }
