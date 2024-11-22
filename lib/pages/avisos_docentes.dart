@@ -1,4 +1,5 @@
 import 'package:avisa_mais/pages/login.dart';
+import 'package:avisa_mais/pages/selecao_cursos.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -127,6 +128,16 @@ class _EnviarAvisoPageState extends State<EnviarAvisoPage> {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+            icon: const Icon(Icons.message, color: Colors.black),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CoursesSelectionPage(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () async {

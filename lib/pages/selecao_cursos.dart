@@ -1,5 +1,7 @@
+import 'package:avisa_mais/pages/avisos_docentes.dart';
 import 'package:avisa_mais/pages/login.dart';
 import 'package:avisa_mais/pages/pagina_inicial.dart';
+import 'package:avisa_mais/wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +17,7 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
   List<Map<String, dynamic>> courses = [];
   List<Map<String, dynamic>> filteredCourses = [];
   bool isLoading = true;
+  String? userRole;
   final TextEditingController _pesquisaController = TextEditingController();
 
   @override
@@ -22,6 +25,14 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
     super.initState();
     _loadCourses();
     _pesquisaController.addListener(_filterCourses);
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final role = await getUserRole();
+    setState(() {
+      userRole = role;
+    });
   }
 
   Future<void> _loadCourses() async {
@@ -86,6 +97,29 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
         actions: [
+          // Botão de mensagens
+          IconButton(
+            icon: const Icon(Icons.message, color: Colors.black),
+            onPressed: () {
+              if (userRole == 'docente' || userRole == 'admin') {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const EnviarAvisoPage()),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Acesso restrito à página de envio de avisos.',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
+          // Botão de logout
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () async {
