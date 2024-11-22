@@ -1,3 +1,5 @@
+import 'package:avisa_mais/pages/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AvisosAlunosPage extends StatelessWidget {
@@ -7,6 +9,19 @@ class AvisosAlunosPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: () async {
+              // Deslogar o usuário
+              await FirebaseAuth.instance.signOut();
+              // Navegar para a tela de login
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+          ),
+        ],
         title: const Text(
           'Avisos - Alunos',
           style: TextStyle(color: Colors.black),

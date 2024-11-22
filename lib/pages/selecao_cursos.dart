@@ -1,5 +1,7 @@
 import 'package:avisa_mais/pages/login.dart';
+import 'package:avisa_mais/pages/login.dart';
 import 'package:avisa_mais/pages/pagina_inicial.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -1,5 +1,5 @@
-import 'package:avisa_mais/pages/avisos_alunos.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class RecentNotificationsPage extends StatefulWidget {
@@ -81,6 +81,19 @@ class _RecentNotificationsPageState extends State<RecentNotificationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: () async {
+              // Deslogar o usuário
+              await FirebaseAuth.instance.signOut();
+              // Navegar para a tela de login
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+          ),
+        ],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {

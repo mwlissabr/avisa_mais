@@ -1,4 +1,6 @@
+// import 'package:avisa_mais/pages/login.dart';
 // import 'package:avisa_mais/pages/pagina_inicial.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
 
 // class SemestersSelectionPage extends StatelessWidget {
@@ -15,6 +17,19 @@
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar: AppBar(
+//         actions: [
+//           IconButton(
+//             icon: const Icon(Icons.logout, color: Colors.black),
+//             onPressed: () async {
+//               // Deslogar o usuário
+//               await FirebaseAuth.instance.signOut();
+//               // Navegar para a tela de login
+//               Navigator.of(context).pushReplacement(
+//                 MaterialPageRoute(builder: (context) => const LoginPage()),
+//               );
+//             },
+//           ),
+//         ],
 //         leading: IconButton(
 //           icon: const Icon(Icons.arrow_back, color: Colors.black),
 //           onPressed: () {
@@ -93,7 +108,7 @@
 //                                       MaterialPageRoute(
 //                                         builder: (context) =>
 //                                             RecentNotificationsPage(
-//                                           selectedSemester: semesters[index],
+//                                           selectedSemester: semesters[index], selectedCourse: '',
 //                                         ),
 //                                       ),
 //                                     );
