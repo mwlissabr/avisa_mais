@@ -5,9 +5,9 @@ class RecentNotificationsPage extends StatefulWidget {
   final String selectedSemester;
 
   const RecentNotificationsPage({
-    Key? key,
+    super.key,
     required this.selectedSemester,
-  }) : super(key: key);
+  });
 
   @override
   _RecentNotificationsPageState createState() =>
