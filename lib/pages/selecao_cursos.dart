@@ -1,7 +1,8 @@
 import 'package:avisa_mais/pages/login.dart';
+import 'package:avisa_mais/pages/login.dart';
 import 'package:avisa_mais/pages/pagina_inicial.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:avisa_mais/pages/selecao_semestre.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -77,9 +78,7 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () async {
-              // Deslogar o usuário
               await FirebaseAuth.instance.signOut();
-              // Navegar para a tela de login
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               );
@@ -156,6 +155,8 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
                                                 RecentNotificationsPage(
                                               selectedSemester: courses[index]
                                                   ['semester'],
+                                              selectedCourse: courses[index][
+                                                  'course'], // Enviando curso selecionado
                                             ),
                                           ),
                                         );

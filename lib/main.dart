@@ -1,6 +1,5 @@
 import 'package:avisa_mais/wrapper.dart';
 import 'package:flutter/material.dart';
-import 'pages/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,30 +26,24 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 86, 105, 48)),
         useMaterial3: true,
-        // Configura o tema para os botões
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
-            backgroundColor: const Color.fromARGB(
-                255, 86, 105, 48), // Cor do texto dos botões
+            backgroundColor: const Color.fromARGB(255, 86, 105, 48),
           ),
         ),
-        // Configura o tema para os botões de texto
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            foregroundColor: const Color.fromARGB(
-                255, 86, 105, 48), // Cor do texto dos botões de texto
+            foregroundColor: const Color.fromARGB(255, 86, 105, 48),
           ),
         ),
-        // Configura o tema para os botões de ícones
         iconButtonTheme: IconButtonThemeData(
           style: IconButton.styleFrom(
-            foregroundColor: Colors.white, // Cor dos ícones
+            foregroundColor: Colors.white,
           ),
         ),
       ),
       home: const Wrapper(),
-      
     );
   }
 }

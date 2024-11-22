@@ -95,6 +95,7 @@ class _EnviarAvisoPageState extends State<EnviarAvisoPage> {
       // Gravar aviso para cada curso/semestre selecionado
       for (var selected in selecionados) {
         await FirebaseFirestore.instance.collection('avisos').add({
+          'name': 'Nome do Docente',
           'message': _mensagemController.text,
           'semester': selected['semestre'],
           'course': selected['curso'],

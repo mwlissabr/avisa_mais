@@ -8,7 +8,7 @@ class LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onPressed, // Usa o callback passado
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 86, 105, 48),
