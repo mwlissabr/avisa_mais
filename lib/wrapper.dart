@@ -1,3 +1,4 @@
+import 'package:avisa_mais/pages/avisos_docentes.dart';
 import 'package:avisa_mais/pages/login.dart';
 import 'package:avisa_mais/pages/selecao_cursos.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,51 +10,50 @@ class Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-        body: StreamBuilder<User?>(
+    return Scaffold(
+      body: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return const Center(child: Text("Erro ao verificar autenticação"));
+              return const Center(
+                  child: Text("Erro ao verificar autenticação"));
             } else if (snapshot.data == null) {
               // Usuário não autenticado, redireciona para a página de login
               return const LoginPage();
             } else {
-            // Usuário autenticado, buscar a role
+              // Usuário autenticado, buscar a role
               return FutureBuilder<String?>(
                 future: getUserRole(),
                 builder: (context, roleSnapshot) {
                   if (roleSnapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (roleSnapshot.hasError) {
-                    return const Center(child: Text("Erro ao carregar dados do usuário"));
+                    return const Center(
+                        child: Text("Erro ao carregar dados do usuário"));
                   } else if (roleSnapshot.hasData) {
                     final role = roleSnapshot.data;
-                      switch(role){
-                        case 'aluno': 
-                          return const CoursesSelectionPage();
-                        case 'docente':
-                          return const CoursesSelectionPage();
-                        default:
-                          return const Center(child: Text("Role desconhecida"));
-                      }
-
-                    }else{
-                      return const Center(child: Text("Nenhum dado encontrado"));
+                    switch (role) {
+                      case 'aluno':
+                        return const CoursesSelectionPage();
+                      case 'docente':
+                        return const EnviarAvisoPage();
+                      default:
+                        return const Center(child: Text("Role desconhecida"));
                     }
-             
+                  } else {
+                    return const Center(child: Text("Nenhum dado encontrado"));
+                  }
                 },
               );
             }
-          }
-      ),
+          }),
     );
   }
 }
 
-Future<String?> getUserRole() async{
+Future<String?> getUserRole() async {
   try {
     final user = FirebaseAuth.instance.currentUser;
 

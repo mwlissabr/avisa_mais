@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 
 class RecentNotificationsPage extends StatefulWidget {
   final String selectedSemester;
+  final String selectedCourse;
 
   const RecentNotificationsPage({
     super.key,
     required this.selectedSemester,
+    required this.selectedCourse,
   });
 
   @override
@@ -24,16 +26,25 @@ class _RecentNotificationsPageState extends State<RecentNotificationsPage> {
     final snapshot = await FirebaseFirestore.instance
         .collection('avisos')
         .where('semester', isEqualTo: widget.selectedSemester)
+        .where('course', isEqualTo: widget.selectedCourse)
         .orderBy('date', descending: true)
         .get();
 
     setState(() {
       notifications = snapshot.docs.map((doc) {
         return {
-          'name': doc['name']?.toString() ?? 'Desconhecido',
-          'message': doc['message']?.toString() ?? 'Sem mensagem',
-          'course': doc['course']?.toString() ?? 'Desconhecido',
-          'semester': doc['semester']?.toString() ?? 'Semestre desconhecido',
+          'name': doc.data().containsKey('name')
+              ? doc['name'].toString()
+              : 'Desconhecido',
+          'message': doc.data().containsKey('message')
+              ? doc['message'].toString()
+              : 'Sem mensagem',
+          'course': doc.data().containsKey('course')
+              ? doc['course'].toString()
+              : 'Desconhecido',
+          'semester': doc.data().containsKey('semester')
+              ? doc['semester'].toString()
+              : 'Semestre desconhecido',
         };
       }).toList();
     });

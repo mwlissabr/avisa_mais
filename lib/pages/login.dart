@@ -1,7 +1,6 @@
 import 'package:avisa_mais/defaults/button-cadastro.dart';
 import 'package:avisa_mais/defaults/button-login.dart';
 import 'package:avisa_mais/pages/nav_base.dart';
-import 'package:avisa_mais/pages/selecao_cursos.dart';
 import 'package:avisa_mais/wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  bool _isRecoveryMode =
-      false; // Adicionada para controlar o modo de recuperação de senha
+  bool _isRecoveryMode = false;
 
   Future<void> _login() async {
     final email = _emailController.text.trim();
