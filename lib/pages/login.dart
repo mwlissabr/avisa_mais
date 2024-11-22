@@ -2,6 +2,7 @@ import 'package:avisa_mais/defaults/button-cadastro.dart';
 import 'package:avisa_mais/defaults/button-login.dart';
 import 'package:avisa_mais/pages/nav_base.dart';
 import 'package:avisa_mais/pages/selecao_cursos.dart';
+import 'package:avisa_mais/wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -40,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const CoursesSelectionPage()),
+        MaterialPageRoute(builder: (context) => const Wrapper()),
       );
     } on FirebaseAuthException catch (e) {
       String errorMessage;

@@ -69,18 +69,21 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
-        title: const Text(
-          'Selecione o curso',
-          style: TextStyle(color: Colors.black),
-        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: () async {
+              // Deslogar o usuário
+              await FirebaseAuth.instance.signOut();
+              // Navegar para a tela de login
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
