@@ -1,9 +1,8 @@
+import 'package:avisa_mais/pages/login.dart';
 import 'package:avisa_mais/pages/nav_base.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:http/http.dart' as http;
-// import 'dart:convert';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -17,7 +16,6 @@ class _SignupPageState extends State<SignupPage> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  // DECIDIR SE SERÁ NECESSÁRIO VERIFICAR EMAIL COM CÓDIGO
   Future<void> _registerUser() async {
     final email = _emailController.text;
     final password = _passwordController.text;
@@ -33,7 +31,7 @@ class _SignupPageState extends State<SignupPage> {
       role = 'aluno';
     } else if (email.endsWith('@unicv.edu.br')) {
       role = 'docente';
-    }else if (email.endsWith('@admin.unicv.edu.br')){
+    } else if (email.endsWith('@admin.unicv.edu.br')) {
       role = 'admin';
     } else {
       _showError('E-mail inválido! Use um e-mail institucional.');
@@ -44,22 +42,25 @@ class _SignupPageState extends State<SignupPage> {
     });
 
     try {
-      // Cadastra o usuário no Firebase
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
       await FirebaseFirestore.instance
-        .collection('usuarios')
-        .doc(userCredential.user!.uid)
-        .set({
+          .collection('usuarios')
+          .doc(userCredential.user!.uid)
+          .set({
         'email': email,
-        'role': role, // Salva o tipo de usuário (docente ou aluno)
+        'role': role,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // Sucesso - exiba uma mensagem
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Cadastro realizado com sucesso!')),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {

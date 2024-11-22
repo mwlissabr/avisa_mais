@@ -92,10 +92,12 @@ class _EnviarAvisoPageState extends State<EnviarAvisoPage> {
     }
 
     try {
-      // Gravar aviso para cada curso/semestre selecionado
+      final user = FirebaseAuth.instance.currentUser;
+      final email = user?.email ?? 'Email não disponível';
+
       for (var selected in selecionados) {
         await FirebaseFirestore.instance.collection('avisos').add({
-          'name': 'Nome do Docente',
+          'name': email,
           'message': _mensagemController.text,
           'semester': selected['semestre'],
           'course': selected['curso'],
@@ -128,21 +130,13 @@ class _EnviarAvisoPageState extends State<EnviarAvisoPage> {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () async {
-              // Deslogar o usuário
               await FirebaseAuth.instance.signOut();
-              // Navegar para a tela de login
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
           ),
         ],
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Image.asset(
@@ -167,12 +161,14 @@ class _EnviarAvisoPageState extends State<EnviarAvisoPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 80),
-              const Text(
-                'Enviar novo aviso',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3D452C),
+              const Center(
+                child: Text(
+                  'Enviar novo aviso',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF3D452C),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -193,7 +189,14 @@ class _EnviarAvisoPageState extends State<EnviarAvisoPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Selecione cursos e semestres'),
+                      const Text(
+                        'Selecione cursos e semestres',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
                       Icon(listaAberta
                           ? Icons.keyboard_arrow_up
                           : Icons.keyboard_arrow_down),
@@ -211,7 +214,7 @@ class _EnviarAvisoPageState extends State<EnviarAvisoPage> {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   constraints: const BoxConstraints(
-                    maxHeight: 300,
+                    maxHeight: 270,
                   ),
                   child: Column(
                     children: [
@@ -249,51 +252,58 @@ class _EnviarAvisoPageState extends State<EnviarAvisoPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: _mensagemController,
-                maxLines: 4,
+                maxLines: 6,
                 decoration: InputDecoration(
                   hintText: 'Digite a mensagem aqui.',
                   filled: true,
                   fillColor: Colors.white,
                   contentPadding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
               ),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: selecionados.map((cursoSemestre) {
-                  return Chip(
-                    label: Text(cursoSemestre['nomeCompleto']),
-                    onDeleted: () {
-                      setState(() {
-                        selecionados.remove(cursoSemestre);
-                      });
-                    },
-                  );
-                }).toList(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: selecionados.map((cursoSemestre) {
+                      return Chip(
+                        label: Text(cursoSemestre['nomeCompleto']),
+                        onDeleted: () {
+                          setState(() {
+                            selecionados.remove(cursoSemestre);
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
-              const Spacer(),
+              const SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
                   onPressed: _enviarAviso,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF576A32),
                     padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 24),
+                        vertical: 14, horizontal: 28),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
                   child: const Text(
                     'Enviar aviso',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
             ],
           ),
         ),

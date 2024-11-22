@@ -1,7 +1,5 @@
 import 'package:avisa_mais/pages/login.dart';
-import 'package:avisa_mais/pages/login.dart';
 import 'package:avisa_mais/pages/pagina_inicial.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,12 +13,15 @@ class CoursesSelectionPage extends StatefulWidget {
 
 class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
   List<Map<String, dynamic>> courses = [];
+  List<Map<String, dynamic>> filteredCourses = [];
   bool isLoading = true;
+  final TextEditingController _pesquisaController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadCourses();
+    _pesquisaController.addListener(_filterCourses);
   }
 
   Future<void> _loadCourses() async {
@@ -55,6 +56,7 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
       if (mounted) {
         setState(() {
           courses = loadedCourses;
+          filteredCourses = List.from(courses);
           isLoading = false;
         });
       }
@@ -66,6 +68,15 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
       }
       print('Erro ao carregar cursos: $e');
     }
+  }
+
+  void _filterCourses() {
+    String query = _pesquisaController.text.toLowerCase();
+    setState(() {
+      filteredCourses = courses
+          .where((course) => course['fullName'].toLowerCase().contains(query))
+          .toList();
+    });
   }
 
   @override
@@ -109,6 +120,7 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
               const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.all(16.0),
+                width: 350,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.4),
                   borderRadius: BorderRadius.circular(8.0),
@@ -128,19 +140,29 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    TextField(
+                      controller: _pesquisaController,
+                      decoration: InputDecoration(
+                        hintText: 'Pesquisar cursos...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     isLoading
                         ? const CircularProgressIndicator()
-                        : courses.isEmpty
+                        : filteredCourses.isEmpty
                             ? const Text('Nenhum curso disponível.')
                             : SizedBox(
                                 height: 350,
-                                width: 320,
                                 child: ListView.builder(
-                                  itemCount: courses.length,
+                                  itemCount: filteredCourses.length,
                                   itemBuilder: (context, index) {
                                     return ListTile(
                                       title: Text(
-                                        courses[index]['fullName'],
+                                        filteredCourses[index]['fullName'],
                                         style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -153,10 +175,12 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 RecentNotificationsPage(
-                                              selectedSemester: courses[index]
-                                                  ['semester'],
-                                              selectedCourse: courses[index][
-                                                  'course'], // Enviando curso selecionado
+                                              selectedSemester:
+                                                  filteredCourses[index]
+                                                      ['semester'],
+                                              selectedCourse:
+                                                  filteredCourses[index]
+                                                      ['course'],
                                             ),
                                           ),
                                         );

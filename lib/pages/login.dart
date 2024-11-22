@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text(
                 'E-mail de recuperação enviado. Verifique sua caixa de entrada.')),
       );
