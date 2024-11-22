@@ -16,7 +16,8 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  bool _isRecoveryMode = false; // Adicionada para controlar o modo de recuperação de senha
+  bool _isRecoveryMode =
+      false; // Adicionada para controlar o modo de recuperação de senha
 
   Future<void> _login() async {
     final email = _emailController.text.trim();
@@ -79,7 +80,9 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('E-mail de recuperação enviado. Verifique sua caixa de entrada.')),
+        SnackBar(
+            content: Text(
+                'E-mail de recuperação enviado. Verifique sua caixa de entrada.')),
       );
     } on FirebaseAuthException catch (e) {
       _showError('Erro ao enviar e-mail de recuperação: ${e.message}');
@@ -155,10 +158,12 @@ class _LoginPageState extends State<LoginPage> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  _isRecoveryMode = !_isRecoveryMode; // Alterna o modo de recuperação
+                  _isRecoveryMode =
+                      !_isRecoveryMode; // Alterna o modo de recuperação
                 });
               },
-              child: Text(_isRecoveryMode ? 'Voltar ao login' : 'Esqueci minha senha'),
+              child: Text(
+                  _isRecoveryMode ? 'Voltar ao login' : 'Esqueci minha senha'),
             ),
           ],
         ),

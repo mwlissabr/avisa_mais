@@ -1,4 +1,5 @@
-import 'package:avisa_mais/pages/avisos_alunos.dart';
+import 'package:avisa_mais/pages/avisos_docentes.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class RecentNotificationsPage extends StatefulWidget {
@@ -16,6 +17,33 @@ class RecentNotificationsPage extends StatefulWidget {
 
 class _RecentNotificationsPageState extends State<RecentNotificationsPage> {
   int _selectedIndex = 0;
+  List<Map<String, String>> notifications = [];
+
+  // Função para carregar os avisos do Firebase
+  Future<void> loadNotifications() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('avisos')
+        .where('semester', isEqualTo: widget.selectedSemester)
+        .orderBy('date', descending: true)
+        .get();
+
+    setState(() {
+      notifications = snapshot.docs.map((doc) {
+        return {
+          'name': doc['name']?.toString() ?? 'Desconhecido',
+          'message': doc['message']?.toString() ?? 'Sem mensagem',
+          'course': doc['course']?.toString() ?? 'Desconhecido',
+          'semester': doc['semester']?.toString() ?? 'Semestre desconhecido',
+        };
+      }).toList();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadNotifications();
+  }
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
@@ -33,23 +61,13 @@ class _RecentNotificationsPageState extends State<RecentNotificationsPage> {
     } else if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const AvisosAlunosPage()),
+        MaterialPageRoute(builder: (context) => const EnviarAvisoPage()),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> notifications = [
-      {'name': 'Coordenador', 'message': 'Evento de Tecnologia dia 20/12.'},
-      {'name': 'Renata C.', 'message': 'Entrega de trabalho dia da prova.'},
-      {
-        'name': 'Gercino',
-        'message': 'Trabalho enviado no email institucional.'
-      },
-      {'name': 'Gustavo', 'message': 'Não haverá aula na sexta-feira.'},
-    ];
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -98,47 +116,43 @@ class _RecentNotificationsPageState extends State<RecentNotificationsPage> {
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Column(
-                children: notifications.map((notification) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 4.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4.0,
-                            offset: const Offset(0, 2),
+                children: notifications.isEmpty
+                    ? [
+                        const Center(child: Text('Não há notificações.')),
+                      ]
+                    : notifications.map((notification) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 4.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4.0,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              leading: const Icon(
+                                Icons.notifications_none,
+                                color: Colors.black,
+                              ),
+                              title: Text(
+                                '${notification['name']}:',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              subtitle: Text(notification['message'] ?? ''),
+                            ),
                           ),
-                        ],
-                      ),
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.notifications_none,
-                          color: Colors.black,
-                        ),
-                        title: Text(
-                          '${notification['name']}:',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        subtitle: Text(notification['message'] ?? ''),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Não há mais notificações.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
+                        );
+                      }).toList(),
               ),
             ),
             const SizedBox(height: 16),

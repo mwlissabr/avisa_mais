@@ -1,4 +1,5 @@
-import 'package:avisa_mais/pages/selecao_semestre.dart';
+import 'package:avisa_mais/pages/pagina_inicial.dart';
+// import 'package:avisa_mais/pages/selecao_semestre.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -21,17 +22,30 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
 
   Future<void> _loadCourses() async {
     try {
-      final snapshot =
+      final coursesSnapshot =
           await FirebaseFirestore.instance.collection('courses').get();
+      final semestersSnapshot =
+          await FirebaseFirestore.instance.collection('semesters').get();
 
       List<Map<String, dynamic>> loadedCourses = [];
-      for (var doc in snapshot.docs) {
-        var data = doc.data();
-        if (data.containsKey('name') && data.containsKey('semesters')) {
-          loadedCourses.add({
-            'name': data['name'],
-            'semesters': List<String>.from(data['semesters']),
-          });
+      Map<String, String> semesterNames = {
+        for (var doc in semestersSnapshot.docs) doc.id: doc.data()['name']
+      };
+
+      for (var courseDoc in coursesSnapshot.docs) {
+        var courseData = courseDoc.data();
+        if (courseData.containsKey('name') &&
+            courseData.containsKey('qtd_semesters')) {
+          for (int i = 1; i <= courseData['qtd_semesters']; i++) {
+            String semesterId = '$i-semestre';
+            String semesterName = semesterNames[semesterId] ?? '$iº Semestre';
+
+            loadedCourses.add({
+              'course': courseData['name'],
+              'semester': semesterName,
+              'fullName': '${courseData['name']} - $semesterName',
+            });
+          }
         }
       }
 
@@ -122,7 +136,7 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
                                   itemBuilder: (context, index) {
                                     return ListTile(
                                       title: Text(
-                                        courses[index]['name'],
+                                        courses[index]['fullName'],
                                         style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -134,11 +148,9 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                SemestersSelectionPage(
-                                              courseName: courses[index]
-                                                  ['name'],
-                                              semesters: courses[index]
-                                                  ['semesters'],
+                                                RecentNotificationsPage(
+                                              selectedSemester: courses[index]
+                                                  ['semester'],
                                             ),
                                           ),
                                         );
