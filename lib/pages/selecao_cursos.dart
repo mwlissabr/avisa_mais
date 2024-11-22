@@ -1,4 +1,6 @@
+import 'package:avisa_mais/pages/login.dart';
 import 'package:avisa_mais/pages/selecao_semestre.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -25,8 +27,10 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
           await FirebaseFirestore.instance.collection('courses').get();
 
       List<Map<String, dynamic>> loadedCourses = [];
+
       for (var doc in snapshot.docs) {
         var data = doc.data();
+
         if (data.containsKey('name') && data.containsKey('semesters')) {
           loadedCourses.add({
             'name': data['name'],
@@ -55,18 +59,21 @@ class _CoursesSelectionPageState extends State<CoursesSelectionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
-        title: const Text(
-          'Selecione o curso',
-          style: TextStyle(color: Colors.black),
-        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: () async {
+              // Deslogar o usuário
+              await FirebaseAuth.instance.signOut();
+              // Navegar para a tela de login
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(

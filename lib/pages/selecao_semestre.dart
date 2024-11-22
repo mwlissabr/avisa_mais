@@ -6,10 +6,10 @@ class SemestersSelectionPage extends StatelessWidget {
   final List<String> semesters;
 
   const SemestersSelectionPage({
-    Key? key,
+    super.key,
     required this.courseName,
     required this.semesters,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class SemestersSelectionPage extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
         title: Text(
-          '$courseName',
+          courseName,
           style: const TextStyle(color: Colors.black),
         ),
       ),
